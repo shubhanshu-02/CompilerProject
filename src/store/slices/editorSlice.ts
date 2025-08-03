@@ -24,6 +24,9 @@ const editorSlice = createSlice({
     },
     setLanguage: (state, action: PayloadAction<Language>) => {
       state.language = action.payload;
+      // Clear breakpoints when switching languages
+      state.breakpoints = [];
+      state.currentLine = undefined;
     },
     toggleBreakpoint: (state, action: PayloadAction<number>) => {
       const line = action.payload;
@@ -32,13 +35,30 @@ const editorSlice = createSlice({
         state.breakpoints.splice(index, 1);
       } else {
         state.breakpoints.push(line);
+        state.breakpoints.sort((a, b) => a - b);
       }
     },
     setCurrentLine: (state, action: PayloadAction<number | undefined>) => {
       state.currentLine = action.payload;
     },
+    clearBreakpoints: (state) => {
+      state.breakpoints = [];
+    },
+    loadCodeFromStorage: (state, action: PayloadAction<{ code: string; language: Language }>) => {
+      state.code = action.payload.code;
+      state.language = action.payload.language;
+      state.breakpoints = [];
+      state.currentLine = undefined;
+    },
   },
 });
 
-export const { setCode, setLanguage, toggleBreakpoint, setCurrentLine } = editorSlice.actions;
+export const { 
+  setCode, 
+  setLanguage, 
+  toggleBreakpoint, 
+  setCurrentLine, 
+  clearBreakpoints, 
+  loadCodeFromStorage 
+} = editorSlice.actions;
 export default editorSlice.reducer;
